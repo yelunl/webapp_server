@@ -7,6 +7,13 @@ const clientSecret = process.env.CLIENT_SECRET;
 
 const port = 3000;
 
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    next();
+  })
+
 const getToken = async () => {
     try {
         const response = await fetch(
