@@ -14,6 +14,7 @@ app.use((req, res, next) => {
     next();
   })
 
+//   get the token for the spotify api
 const getToken = async () => {
     try {
         const response = await fetch(
@@ -37,6 +38,7 @@ const getToken = async () => {
 
 }
 
+// create the header for each request
 const createHeader = async (apiToken) => {
     return {
             method: "GET",
@@ -46,26 +48,18 @@ const createHeader = async (apiToken) => {
         };
 }
 
+// get a list of all the items in my playlist
 const getPlaylistItems = async (requestHeader) => {
     try {
         const response = await fetch('https://api.spotify.com/v1/playlists/6nlXed0mS4PF6yMql9ReOK/tracks', requestHeader);
         const jsonResponse = await response.json();
-        // console.log(jsonResponse.items)
         return jsonResponse.items;
     } catch(err) {
         console.log(err)
     }
 }
 
-// const callApi = async () => {
-//     const apiToken = await getToken();
-//     const requestHeader = await createHeader(apiToken);
-//     const musicItems = await getPlaylistItems(requestHeader);
-//     collectDataApi(musicItems);
-// };
-
-// callApi();
-
+// put all the required properties of the items in the playlist in a new object
 const collectDataApi = (musicItems) => {
     const apiData = musicItems.map(item => {
         const nameSong = item.track.name;
@@ -77,13 +71,13 @@ const collectDataApi = (musicItems) => {
     return apiData;
 }
 
+// call all the functions
 app.get('/', async (req, res) => {
     const apiToken = await getToken();
     const requestHeader = await createHeader(apiToken);
     const musicItems = await getPlaylistItems(requestHeader);
     const result = collectDataApi(musicItems);
-
-    console.log(result)
+    
     res.send(result)
     })
   
