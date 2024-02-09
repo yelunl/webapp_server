@@ -30,11 +30,55 @@ const getToken = async () => {
 
 }
 
+const createHeader = async (apiToken) => {
+    return {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${apiToken}`,
+            },
+        };
+}
+
+const getPlaylistItems = async (requestHeader) => {
+    try {
+        const response = await fetch('https://api.spotify.com/v1/playlists/6nlXed0mS4PF6yMql9ReOK/tracks', requestHeader);
+        const jsonResponse = await response.json();
+        // console.log(jsonResponse.items)
+        return jsonResponse.items;
+    } catch(err) {
+        console.log(err)
+    }
+}
+
+// const callApi = async () => {
+//     const apiToken = await getToken();
+//     const requestHeader = await createHeader(apiToken);
+//     const musicItems = await getPlaylistItems(requestHeader);
+//     collectDataApi(musicItems);
+// };
+
+// callApi();
+
+const collectDataApi = (musicItems) => {
+    const apiData = musicItems.map(item => {
+        const nameSong = item.track.name;
+        const nameArtist = item.track.artists[0].name;
+        const imageAlbum = item.track.album.images[0].url;
+        const link = item.track['external_urls'].spotify;
+        return {nameSong, nameArtist, imageAlbum, link}
+    });
+    return apiData;
+}
+
 app.get('/', async (req, res) => {
-    const result = await getToken();
+    const apiToken = await getToken();
+    const requestHeader = await createHeader(apiToken);
+    const musicItems = await getPlaylistItems(requestHeader);
+    const result = collectDataApi(musicItems);
+
+    console.log(result)
     res.send(result)
     })
-//   })
   
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
